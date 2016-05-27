@@ -5,7 +5,7 @@ require 'csv'
 
 counties_array = []
 
-(1..51).each do |index|
+(1..56).each do |index|
   p index
   url = "http://uselectionatlas.org/RESULTS/datagraph.php?year=2012&fips=#{index}&f=1&off=0&elect=0"
 
@@ -52,9 +52,9 @@ counties_array.each do |county|
 end
 
 
-# CSV.open("2012data.csv", "wb") do |csv|
-#   counties_array.each do |county|
-#     csv << county.values
-#   end
-# end
+CSV.open("2012data.csv", "wb") do |csv|
+  counties_array.each do |county|
+    csv << county.values
+  end
+end
 
