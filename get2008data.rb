@@ -7,13 +7,19 @@ counties_array = []
 
 (1..51).each do |index|
   p index
-  url = "http://uselectionatlas.org/RESULTS/datagraph.php?year=2012&fips=#{index}&f=1&off=0&elect=0"
+  url = "http://uselectionatlas.org/RESULTS/datagraph.php?year=2008&fips=#{index}&f=1&off=0&elect=0"
 
   page = Nokogiri::HTML(open(url))
 
   table_rows = page.css('.info tr').map{|row| row.children.map{|x| x.text}}
   table_rows.each do |row|
     row = row.select! {|field| field != " "}
+  end
+
+  if index == 48
+    table_rows.insert(588, ["Other", "0", "0"])
+    table_rows.insert(451, ["Other", "0", "0"])
+    table_rows.insert(392, ["Other", "0", "0"])
   end
 
   if index != 40
@@ -34,11 +40,10 @@ counties_array = []
         counties.push(table_rows[i].concat(table_rows[i+1]))
       end
     end
-
   end
 
   counties.each do |county|
-  counties_array.push ({"state_index": index, "county_name": county[0], "d_percent": county[2], "d_total": county[3], "r_percent": county[5], "r_total": county[6], "o_percent": county[8] || "0", "o_total": county[9] || "0" })
+  counties_array.push ({"state_index": index, "county_name": county[0], "d_percent": county[2], "d_total": county[3], "r_percent": county[5], "r_total": county[6], "o_percent": county[8] || "0", "o_total": county[9] || "0"})
   end
 end
 
@@ -52,9 +57,8 @@ counties_array.each do |county|
 end
 
 
-# CSV.open("2012data.csv", "wb") do |csv|
+# CSV.open("2008data.csv", "wb") do |csv|
 #   counties_array.each do |county|
 #     csv << county.values
 #   end
 # end
-
