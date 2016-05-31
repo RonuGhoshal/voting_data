@@ -20,6 +20,12 @@ counties_array = []
     table_rows.insert(41, ["Other", "0", "0"])
   end
 
+  if index == 13
+    table_rows.insert(417, ["Other", "0", "0"])
+    table_rows.insert(247, ["Other", "0", "0"])
+    table_rows.insert(185, ["Other", "0", "0"])
+  end
+
   if index == 28
     table_rows.insert(35, ["Other", "0", "0"])
   end
@@ -30,6 +36,12 @@ counties_array = []
 
   if index == 45
     table_rows.insert(92, ["Other", "0", "0"])
+  end
+
+  if index == 48
+    table_rows.insert(450, ["Other", "0", "0"])
+    table_rows.insert(403, ["Other", "0", "0"])
+    table_rows.insert(287, ["Other", "0", "0"])
   end
 
   counties = []
