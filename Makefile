@@ -14,4 +14,3 @@ build/counties.json: build/gz_2010_us_050_00_20m.shp
 			.translate([width / 2, height / 2])' \
 		--simplify=.5 \
 		-- counties=$<
-
