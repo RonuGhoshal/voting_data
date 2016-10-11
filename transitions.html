@@ -62,7 +62,7 @@ function setMap() {
 function loadData() {
   queue()
       .defer(d3.json, "us.json")
-      .defer(d3.csv, "transitions08_to_12.csv")
+      .defer(d3.csv, "transitions88_to_12.csv")
       .await(processData);
 }
 
@@ -101,7 +101,7 @@ function drawMap(us) {
 
   var dataRange = getDataRange();
   d3.selectAll(".county")
-  .attr('fill-opacity', function(d){
+  .attr('fill', function(d){
     return getColor(d.properties[attributeArray[currentAttribute]], dataRange);
   });
 }
@@ -110,7 +110,7 @@ function sequenceMap() {
   var dataRange = getDataRange();
   d3.selectAll('.county').transition()
     .duration(750)
-    .attr('fill-opacity', function(d){
+    .attr('fill', function(d){
       return getColor(d.properties[attributeArray[currentAttribute]], dataRange);
     })
 }
@@ -118,7 +118,7 @@ function sequenceMap() {
 function getColor(valueIn, valuesIn) {
   var color = d3.scale.linear()
   .domain([valuesIn[0], valuesIn[1]])
-  .range([.3, 1]);
+  .range(["red", "blue"]);
   return color(valueIn)
 }
 
