@@ -52,7 +52,7 @@ function setMap() {
 function loadData() {
   queue()
       .defer(d3.json, "us.json")
-      .defer(d3.csv, "datasofar13.csv")
+      .defer(d3.csv, "datasofar16.csv")
       .await(processData);
 }
 
