@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.counties {
+  fill: none;
+}
+
+.states {
+  fill: none;
+  stroke: #fff;
+  stroke-linejoin: round;
+}
+
+.q0-9 { fill:rgb(255,0,0); }
+.q1-9 { fill:rgb(224, 0, 31); }
+.q2-9 { fill:rgb(192, 0, 63); }
+.q3-9 { fill:rgb(160, 0, 95); }
+.q4-9 { fill:rgb(128, 0, 127); }
+.q5-9 { fill:rgb(96, 0, 159); }
+.q6-9 { fill:rgb(64, 0, 191); }
+.q7-9 { fill:rgb(32, 0, 223); }
+.q8-9 { fill:rgb(0,0,255); }
+
+</style>
+<body>
+  <div id="wrapper">
+      <div id="map"></div>
+      <button id="play">play</button>
+      <span id="clock">year</span>
+  </div>
+
+<script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="http://d3js.org/d3.geo.projection.v0.min.js"></script>
+<script src="//d3js.org/queue.v1.min.js"></script>
+<script src="//d3js.org/topojson.v1.min.js"></script>
+<script>
+var width, height, projection, path, graticule, svg, attributeArray = [], currentAttribute = 0, playing = false;
+
+function init() {
+  setMap();
+  animateMap();
+}
+
+function setMap() {
+  width = 960, height = 600;
+
+  projection = d3.geo.albersUsa()
+      .scale(1280)
+      .translate([width / 2, height / 2]);
+
+  path = d3.geo.path()
+      .projection(projection);
+
+  svg = d3.select("#map").append("svg")
+      .attr("width", width)
+      .attr("height", height);
+
+  loadData();
+}
+
+function loadData() {
+  queue()
+      .defer(d3.json, "us.json")
+      .defer(d3.csv, "data48and68.csv")
+      .await(processData);
+}
+
+
+function processData(error, us, countyData) {
+  var counties = us.objects.counties.geometries;
+  for (var i in counties) {
+    counties[i].properties = {"id": counties[i].id};
+    for (var j in countyData) {
+      if (counties[i].properties.id == countyData[j].id) {
+        for(var k in countyData[i]) {
+          if(k != 'name' && k != "id") {
+            if(attributeArray.indexOf(k) == -1 ) {
+              attributeArray.push(k);
+            }
+            counties[i].properties[k] = countyData[j][k];
+          }
+        }
+        break;
+      }
+    }
+  }
+  d3.select('#clock').html(attributeArray[currentAttribute]);
+  drawMap(us);
+}
+
+function drawMap(us) {
+  svg.selectAll(".county")
+  .data(topojson.feature(us, us.objects.counties).features)
+  .enter().append("path")
+  .attr("class", "county")
+  .attr("id", function(d){
+    return "code_" + d.properties.id; }, true)
+  .attr("d", path);
+
+
+  var dataRange = getDataRange();
+  d3.selectAll(".county")
+  .attr('fill', function(d){
+    return "#" + d.properties["hex_color"]
+  });
+}
+
+function sequenceMap() {
+  var dataRange = getDataRange();
+  d3.selectAll('.county').transition()
+    .duration(1000)
+    .attr('fill', function(d){
+      return d.properties["hex_color"];
+    })
+}
+
+function getColor(valueIn, valuesIn) {
+  var color = d3.scale.linear()
+  .domain([valuesIn[0], valuesIn[1]])
+  .range(["blue", "red"]);
+  return color(valueIn)
+}
+
+function getDataRange(){
+  var min = Infinity, max = -Infinity;
+  d3.selectAll('.county')
+    .each(function(d,i) {
+      var currentValue = d.properties[attributeArray[currentAttribute]];
+      if (currentValue <= min && currentValue != -99 && currentValue != 'undefined') {
+        min = currentValue;
+      }
+      if(currentValue >= max && currentValue != -99 && currentValue != 'undefined') {
+        max = currentValue;
+      }
+    });
+  return [min, max];
+}
+
+function animateMap(){
+  var timer;
+  d3.select('#play')
+  .on('click', function(){
+    if(playing == false) {
+      timer = setInterval(function(){
+        if(currentAttribute < attributeArray.length - 1) {
+          currentAttribute += 1;
+        } else {
+          currentAttribute = 0;
+        }
+        sequenceMap();
+        d3.select('#clock').html(attributeArray[currentAttribute]);
+      }, 2000);
+
+      d3.select(this).html('stop');
+      playing = true;
+    } else {
+      clearInterval(timer);
+      d3.select(this).html('play');
+      playing = false;
+    }
+  });
+}
+
+window.onload = init();
+
+</script>
+</body>

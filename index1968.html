@@ -62,7 +62,7 @@ function setMap() {
 function loadData() {
   queue()
       .defer(d3.json, "us.json")
-      .defer(d3.csv, "transitions88_to_12.csv")
+      .defer(d3.csv, "1968_hex_colors.csv")
       .await(processData);
 }
 
@@ -78,7 +78,7 @@ function processData(error, us, countyData) {
             if(attributeArray.indexOf(k) == -1 ) {
               attributeArray.push(k);
             }
-            counties[i].properties[k] = Number(countyData[j][k]);
+            counties[i].properties[k] = countyData[j][k];
           }
         }
         break;
@@ -102,23 +102,26 @@ function drawMap(us) {
   var dataRange = getDataRange();
   d3.selectAll(".county")
   .attr('fill', function(d){
-    return getColor(d.properties[attributeArray[currentAttribute]], dataRange);
+    if(d.properties["id"] == 4012) {
+      console.log(d);
+    }
+    return "#" + d.properties["1968"]
   });
 }
 
 function sequenceMap() {
   var dataRange = getDataRange();
   d3.selectAll('.county').transition()
-    .duration(750)
+    .duration(1000)
     .attr('fill', function(d){
-      return getColor(d.properties[attributeArray[currentAttribute]], dataRange);
+      return d.properties["1968"];
     })
 }
 
 function getColor(valueIn, valuesIn) {
   var color = d3.scale.linear()
   .domain([valuesIn[0], valuesIn[1]])
-  .range(["red", "blue"]);
+  .range(["blue", "red"]);
   return color(valueIn)
 }
 
